@@ -9,6 +9,7 @@ import {
   createEventSchema,
   updateEventSchema,
   deleteEventSchema,
+  getEventByIdSchema,
   searchEventsSchema,
 } from "@/lib/validations/event";
 
@@ -48,27 +49,28 @@ export const searchEvents = createSafeAction(
   }
 );
 
-export async function getEventById(
-  eventId: string
-): Promise<Event | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export const getEventById = createSafeAction(
+  getEventByIdSchema,
+  async (data): Promise<Event | null> => {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) return null;
+    if (!user) return null;
 
-  const { data, error } = await supabase
-    .from("events")
-    .select("*, venues(*)")
-    .eq("id", eventId)
-    .eq("user_id", user.id)
-    .single();
+    const { data: event, error } = await supabase
+      .from("events")
+      .select("*, venues(*)")
+      .eq("id", data.id)
+      .eq("user_id", user.id)
+      .single();
 
-  if (error) return null;
+    if (error) return null;
 
-  return data as Event;
-}
+    return event as Event;
+  }
+);
 
 export const createEvent = createSafeAction(
   createEventSchema,

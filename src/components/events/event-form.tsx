@@ -40,6 +40,13 @@ type EventFormProps = {
   defaultValues?: Event;
 };
 
+function getSubmitLabel(mode: "create" | "edit", isPending: boolean): string {
+  if (mode === "edit") {
+    return isPending ? "Updating..." : "Update Event";
+  }
+  return isPending ? "Creating..." : "Create Event";
+}
+
 export function EventForm({
   mode,
   defaultValues,
@@ -278,7 +285,7 @@ export function EventForm({
           <Button
             type="button"
             variant="outline"
-            className="w-full border-dashed"
+            className="w-full min-h-[44px] border-dashed"
             onClick={() =>
               append({ name: "", address: "", city: "", state: "", zip_code: "" })
             }
@@ -290,9 +297,7 @@ export function EventForm({
 
         <Button type="submit" className="w-full" size="lg" disabled={isPending}>
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isPending
-            ? (mode === "edit" ? "Updating..." : "Creating...")
-            : (mode === "edit" ? "Update Event" : "Create Event")}
+          {getSubmitLabel(mode, isPending)}
         </Button>
       </form>
     </Form>

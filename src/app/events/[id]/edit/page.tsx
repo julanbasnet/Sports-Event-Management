@@ -17,11 +17,13 @@ export default async function EditEventPage({
   params,
 }: EditEventPageProps): Promise<React.ReactElement> {
   const { id } = await params;
-  const event = await getEventById(id);
+  const result = await getEventById({ id });
 
-  if (!event) {
+  if (!result.success || !result.data) {
     redirect("/dashboard");
   }
+
+  const event = result.data;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">

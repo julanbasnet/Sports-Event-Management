@@ -42,7 +42,7 @@ export default async function DashboardPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <Button asChild>
+        <Button className="min-h-[44px]" asChild>
           <Link href="/events/new">
             <Plus className="mr-2 h-4 w-4" />
             Create Event
