@@ -13,7 +13,7 @@
   --color-fb-galaxy-light: #0A2540;
   --color-fb-galaxy-muted: #1B3A4B;
 
-  --shadow-glow: 0 0 20px rgba(23, 242, 227, 0.3);
+  --shadow-glow: 0 0 20px rgba(23, 242, 227, 0.15);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

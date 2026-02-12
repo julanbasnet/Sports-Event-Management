@@ -26,6 +26,10 @@ export const updateEventSchema = createEventSchema.extend({
   id: z.string().uuid("Invalid event ID"),
 });
 
+export const getEventByIdSchema = z.object({
+  id: z.string().uuid("Invalid event ID"),
+});
+
 export const deleteEventSchema = z.object({
   id: z.string().uuid("Invalid event ID"),
 });

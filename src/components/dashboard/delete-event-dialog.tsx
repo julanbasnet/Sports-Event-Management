@@ -61,6 +61,7 @@ export function DeleteEventDialog({
         <DialogFooter>
           <Button
             variant="outline"
+            className="min-h-[44px]"
             onClick={() => onOpenChange(false)}
             disabled={isPending}
           >
@@ -68,6 +69,7 @@ export function DeleteEventDialog({
           </Button>
           <Button
             variant="destructive"
+            className="min-h-[44px]"
             onClick={handleDelete}
             disabled={isPending}
           >

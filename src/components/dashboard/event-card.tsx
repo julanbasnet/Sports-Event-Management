@@ -54,7 +54,7 @@ export function EventCard({ event }: EventCardProps): React.ReactElement {
 
   return (
     <>
-      <Card className="flex flex-col transition-shadow hover:shadow-glow">
+      <Card className="flex flex-col transition-all duration-200 ease-in-out hover:shadow-glow hover:-translate-y-0.5 hover:border-fb-aqua/30">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <Badge variant="outline" className={badgeColor}>
