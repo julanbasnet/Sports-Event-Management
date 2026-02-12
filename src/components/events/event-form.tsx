@@ -192,7 +192,7 @@ export function EventForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="text-destructive hover:text-destructive"
+                  className="min-h-[44px] min-w-[44px] text-destructive hover:text-destructive"
                   onClick={() => remove(index)}
                   disabled={fields.length <= 1}
                 >
@@ -289,16 +289,10 @@ export function EventForm({
         </div>
 
         <Button type="submit" className="w-full" size="lg" disabled={isPending}>
-          {isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {mode === "edit" ? "Updating..." : "Creating..."}
-            </>
-          ) : mode === "edit" ? (
-            "Update Event"
-          ) : (
-            "Create Event"
-          )}
+          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isPending
+            ? (mode === "edit" ? "Updating..." : "Creating...")
+            : (mode === "edit" ? "Update Event" : "Create Event")}
         </Button>
       </form>
     </Form>

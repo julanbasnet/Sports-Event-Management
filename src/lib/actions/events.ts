@@ -4,10 +4,11 @@ import { revalidatePath } from "next/cache";
 
 import { createSafeAction } from "@/lib/actions/safe-action";
 import { createClient } from "@/lib/supabase/server";
-import type { Event, ActionResult } from "@/lib/types";
+import type { Event } from "@/lib/types";
 import {
   createEventSchema,
   updateEventSchema,
+  deleteEventSchema,
   searchEventsSchema,
 } from "@/lib/validations/event";
 
@@ -176,34 +177,29 @@ export const updateEvent = createSafeAction(
   }
 );
 
-export async function deleteEvent(
-  eventId: string
-): Promise<ActionResult<null>> {
-  try {
+export const deleteEvent = createSafeAction(
+  deleteEventSchema,
+  async (data): Promise<null> => {
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "You must be logged in" };
+      throw new Error("You must be logged in");
     }
 
     const { error } = await supabase
       .from("events")
       .delete()
-      .eq("id", eventId)
+      .eq("id", data.id)
       .eq("user_id", user.id);
 
     if (error) {
-      return { success: false, error: error.message };
+      throw new Error(error.message);
     }
 
     revalidatePath("/dashboard");
-    return { success: true, data: null };
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    return { success: false, error: message };
+    return null;
   }
-}
+);

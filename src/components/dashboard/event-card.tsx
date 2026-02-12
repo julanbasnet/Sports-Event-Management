@@ -54,7 +54,7 @@ export function EventCard({ event }: EventCardProps): React.ReactElement {
 
   return (
     <>
-      <Card className="flex flex-col transition-shadow hover:shadow-md">
+      <Card className="flex flex-col transition-shadow hover:shadow-glow">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <Badge variant="outline" className={badgeColor}>
@@ -90,7 +90,7 @@ export function EventCard({ event }: EventCardProps): React.ReactElement {
           )}
         </CardContent>
         <CardFooter className="gap-2 pt-0">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="ghost" size="sm" className="min-h-[44px] min-w-[44px]" asChild>
             <Link href={`/events/${event.id}/edit`}>
               <Pencil className="mr-1 h-4 w-4" />
               Edit
@@ -99,7 +99,7 @@ export function EventCard({ event }: EventCardProps): React.ReactElement {
           <Button
             variant="ghost"
             size="sm"
-            className="text-destructive hover:text-destructive"
+            className="min-h-[44px] min-w-[44px] text-destructive hover:text-destructive"
             onClick={() => setDeleteOpen(true)}
           >
             <Trash2 className="mr-1 h-4 w-4" />
