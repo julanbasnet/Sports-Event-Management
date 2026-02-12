@@ -31,9 +31,9 @@ const SPORT_BADGE_COLORS: Record<string, string> = {
   Football: "bg-purple-100 text-purple-800 border-purple-200",
   Hockey: "bg-sky-100 text-sky-800 border-sky-200",
   Volleyball: "bg-orange-100 text-orange-800 border-orange-200",
-  Cricket: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  Golf: "bg-teal-100 text-teal-800 border-teal-200",
-  Swimming: "bg-cyan-100 text-cyan-800 border-cyan-200",
+  Cricket: "bg-green-50 text-green-700 border-green-100",
+  Golf: "bg-emerald-50 text-emerald-800 border-emerald-100",
+  Swimming: "bg-sky-50 text-sky-900 border-sky-100",
 };
 
 export function EventCard({ event }: EventCardProps): React.ReactElement {
