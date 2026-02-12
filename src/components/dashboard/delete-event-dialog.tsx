@@ -34,7 +34,7 @@ export function DeleteEventDialog({
 
   function handleDelete() {
     startTransition(async () => {
-      const result = await deleteEvent(eventId);
+      const result = await deleteEvent({ id: eventId });
       if (result.success) {
         toast.success("Event deleted successfully");
         onOpenChange(false);

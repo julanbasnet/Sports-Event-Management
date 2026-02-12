@@ -26,6 +26,10 @@ export const updateEventSchema = createEventSchema.extend({
   id: z.string().uuid("Invalid event ID"),
 });
 
+export const deleteEventSchema = z.object({
+  id: z.string().uuid("Invalid event ID"),
+});
+
 export const searchEventsSchema = z.object({
   query: z.string().optional(),
   sport_type: z.string().optional(),

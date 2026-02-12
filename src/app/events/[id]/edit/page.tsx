@@ -25,7 +25,7 @@ export default async function EditEventPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Button variant="ghost" asChild>
+      <Button variant="ghost" className="text-fb-aqua-dark hover:text-fb-aqua-dark min-h-[44px]" asChild>
         <Link href="/dashboard">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Dashboard

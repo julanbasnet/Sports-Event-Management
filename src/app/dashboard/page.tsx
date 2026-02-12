@@ -8,12 +8,26 @@ import { Button } from "@/components/ui/button";
 import { SearchFilterBar } from "@/components/dashboard/search-filter-bar";
 import { EventGrid } from "@/components/dashboard/event-grid";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import { DashboardError } from "@/components/dashboard/dashboard-error";
 
 import { searchEvents } from "@/lib/actions/events";
+import type { ActionResult, Event } from "@/lib/types";
 
 type DashboardPageProps = {
   searchParams: Promise<{ q?: string; sport?: string }>;
 };
+
+function EventContent({ result }: { result: ActionResult<Event[]> }): React.ReactElement {
+  if (!result.success) {
+    return <DashboardError message={result.error} />;
+  }
+
+  if (result.data.length === 0) {
+    return <EmptyState />;
+  }
+
+  return <EventGrid events={result.data} />;
+}
 
 export default async function DashboardPage({
   searchParams,
@@ -23,8 +37,6 @@ export default async function DashboardPage({
     query: params.q ?? "",
     sport_type: params.sport ?? "",
   });
-
-  const events = result.success ? result.data : [];
 
   return (
     <div className="space-y-6">
@@ -42,15 +54,7 @@ export default async function DashboardPage({
         <SearchFilterBar />
       </Suspense>
 
-      {!result.success ? (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">
-          Failed to load events. Please try refreshing the page.
-        </div>
-      ) : events.length === 0 ? (
-        <EmptyState />
-      ) : (
-        <EventGrid events={events} />
-      )}
+      <EventContent result={result} />
     </div>
   );
 }

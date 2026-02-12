@@ -37,6 +37,7 @@ export function Navbar({ userEmail }: NavbarProps): React.ReactElement {
             onClick={handleSignOut}
             variant="ghost"
             size="sm"
+            className="min-h-[44px] min-w-[44px]"
             disabled={isPending}
             aria-label="Sign out"
           >

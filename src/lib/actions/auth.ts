@@ -32,7 +32,7 @@ export async function signOut(): Promise<void> {
   redirect("/login");
 }
 
-export async function getUser() {
+export async function getUser(): Promise<import("@supabase/supabase-js").User | null> {
   const supabase = await createClient();
   const {
     data: { user },
