@@ -786,6 +786,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
     () => FASTBREAK_TIPS[Math.floor(Math.random() * FASTBREAK_TIPS.length)],
   );
   const [tipFade, setTipFade] = useState(true);
+  const [tipPulse, setTipPulse] = useState(false);
   const [groundSlider, setGroundSlider] = useState([72]);
   const [isPending, startTransition] = useTransition();
 
@@ -841,6 +842,8 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
     tipTimeoutRef.current = setTimeout(() => {
       setActiveTip(FASTBREAK_TIPS[idx]);
       setTipFade(true);
+      setTipPulse(true);
+      setTimeout(() => setTipPulse(false), 850);
     }, 180);
   }, []);
 
@@ -1429,7 +1432,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
 
       {/* Login card */}
       <div className="absolute top-1/2 left-1/2 md:left-[35%] -translate-x-1/2 -translate-y-1/2 z-10 w-full max-w-[300px] md:max-w-[340px] px-3">
-        <Card className="login-card-glass border-none bg-transparent">
+        <Card className="login-card-glass border-none bg-transparent shadow-none">
           <CardHeader className="text-center pb-0 px-5 pt-[22px] md:px-8 md:pt-7">
             <Image
               src="/images/fastbreak-logo-reversed.svg"
@@ -1441,13 +1444,16 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
             />
 
             {/* Tip zone — shows random Fastbreak fact, swaps on each basket */}
-            <div className="mt-2.5 md:mt-3 rounded-lg bg-fb-aqua/[0.04] border border-fb-aqua/[0.08] px-3 py-2.5 md:px-4 md:py-3 h-[72px] md:h-[80px] flex items-center overflow-hidden">
+            <div className={cn(
+              "mt-2.5 md:mt-3 rounded-lg bg-fb-aqua/[0.04] border border-fb-aqua/[0.08] px-3 py-2.5 md:px-4 md:py-3 h-[72px] md:h-[80px] flex items-center overflow-hidden transition-[border-color,box-shadow] duration-500",
+              tipPulse && "login-tip-pulse",
+            )}>
               <p
                 className={cn(
-                  "text-[10px] md:text-xs leading-relaxed text-fb-sky/70 font-sans text-left transition-all duration-300",
+                  "text-[10px] md:text-xs leading-relaxed font-sans text-left transition-all duration-[350ms] ease-out",
                   tipFade
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-1",
+                    ? "opacity-100 translate-y-0 blur-0 text-fb-sky/80"
+                    : "opacity-0 translate-y-2 blur-[2px] text-fb-sky/40",
                 )}
               >
                 {activeTip}
@@ -1467,7 +1473,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
             <Button
               onClick={handleSignIn}
               disabled={isPending}
-              variant="outline"
+              variant="ghost"
               className="login-btn w-full h-11 md:h-12 text-sm md:text-base font-semibold rounded-lg text-white transition-all duration-300"
             >
               {isPending ? (
