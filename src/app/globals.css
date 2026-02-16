@@ -122,7 +122,6 @@
 @theme inline {
   --font-orbitron: "Orbitron", monospace;
   --shadow-login-card: 0 0 80px rgba(23, 242, 227, 0.06), 0 24px 60px rgba(0, 0, 0, 0.4);
-  --shadow-score-miss: 0 0 18px rgba(255, 74, 74, 0.25);
   --shadow-btn-glow: 0 0 24px rgba(23, 242, 227, 0.12);
 }
 
@@ -140,12 +139,6 @@
   background: rgba(1, 22, 39, 0.4);
   backdrop-filter: blur(8px);
   border-color: rgba(23, 242, 227, 0.06);
-}
-
-/* Score badge frosted background */
-@utility login-score-badge {
-  backdrop-filter: blur(12px);
-  transition: all 0.35s ease;
 }
 
 /* Vertical guide line gradient through ground handle */

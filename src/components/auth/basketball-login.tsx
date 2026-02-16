@@ -5,7 +5,6 @@ import Image from "next/image";
 
 import { Loader2 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,6 +15,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { signInWithGoogle } from "@/lib/actions/auth";
+import { FASTBREAK_TIPS } from "@/lib/constants/fastbreak-tips";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
@@ -782,8 +782,10 @@ function drawHoop(
 // ============================================================================
 
 export function BasketballLogin({ error }: BasketballLoginProps): React.ReactElement {
-  const [score, setScore] = useState(0);
-  const [isRedBadge, setIsRedBadge] = useState(false);
+  const [activeTip, setActiveTip] = useState(
+    () => FASTBREAK_TIPS[Math.floor(Math.random() * FASTBREAK_TIPS.length)],
+  );
+  const [tipFade, setTipFade] = useState(true);
   const [groundSlider, setGroundSlider] = useState([72]);
   const [isPending, startTransition] = useTransition();
 
@@ -802,7 +804,8 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
   const netSwayRef = useRef(0);
   const hasScoredRef = useRef(false);
   const worldRef = useRef<WorldLayout | null>(null);
-  const scoreValueRef = useRef(0);
+  const tipShownRef = useRef<Set<number>>(new Set());
+  const tipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const groundPercentRef = useRef(72);
 
   // -- Hand position in world coordinates --
@@ -818,27 +821,45 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
     };
   }, []);
 
+  // -- Pick a random unseen tip (cycles through all 100 before repeating) --
+
+  const pickRandomTip = useCallback((): void => {
+    const shown = tipShownRef.current;
+    if (shown.size >= FASTBREAK_TIPS.length) shown.clear();
+
+    let idx: number;
+    do {
+      idx = Math.floor(Math.random() * FASTBREAK_TIPS.length);
+    } while (shown.has(idx));
+
+    shown.add(idx);
+
+    // Crossfade: fade out → swap → fade in
+    setTipFade(false);
+    if (tipTimeoutRef.current) clearTimeout(tipTimeoutRef.current);
+
+    tipTimeoutRef.current = setTimeout(() => {
+      setActiveTip(FASTBREAK_TIPS[idx]);
+      setTipFade(true);
+    }, 180);
+  }, []);
+
   // -- Score & miss handlers --
 
   const handleScore = useCallback((): void => {
-    scoreValueRef.current++;
-    setScore(scoreValueRef.current);
-    setIsRedBadge(false);
     netSwayRef.current = 2.5;
     hasScoredRef.current = true;
     gameStateRef.current = GAME_STATE.SCORE;
     pauseCountRef.current = 35;
+    pickRandomTip();
 
     const ball = ballRef.current;
     for (let i = 0; i < 28; i++) {
       sparksRef.current.push(new Spark(ball.x, ball.y, CANVAS.accent));
     }
-  }, []);
+  }, [pickRandomTip]);
 
   const handleMiss = useCallback((): void => {
-    scoreValueRef.current = 0;
-    setScore(0);
-    setIsRedBadge(true);
     gameStateRef.current = GAME_STATE.MISS;
     pauseCountRef.current = 20;
 
@@ -1241,6 +1262,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
     return () => {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animFrameRef.current);
+      if (tipTimeoutRef.current) clearTimeout(tipTimeoutRef.current);
     };
   }, [getHandPosition, handleScore, handleMiss]);
 
@@ -1386,23 +1408,6 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
         onTouchMove={handlePointerMove}
         onTouchEnd={handlePointerUp}
       />
-
-      {/* Score badge */}
-      <div className="absolute top-2.5 right-2.5 z-10 md:top-4 md:right-5">
-        <Badge
-          variant="outline"
-          className={cn(
-            "login-score-badge font-bold border text-sm px-2.5 py-1.5",
-            "md:text-base md:px-4 md:py-2",
-            isRedBadge
-              ? "bg-destructive/15 text-destructive border-destructive/50 shadow-score-miss"
-              : "bg-fb-galaxy/80 text-fb-aqua border-fb-aqua/30",
-          )}
-        >
-          🏀 {score}
-        </Badge>
-      </div>
-
       {/* Ground handle — before/after style drag circle on the ground line */}
       {/* Dynamic `top` is the one required inline style — driven by JS drag state */}
       <div
@@ -1434,9 +1439,20 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
               priority
               className="mx-auto w-[180px] md:w-[220px] h-auto login-logo-glow"
             />
-            <p className="text-fb-sky text-[10px] md:text-[11px] mt-2 opacity-50 font-sans">
-              Accelerate Your Game
-            </p>
+
+            {/* Tip zone — shows random Fastbreak fact, swaps on each basket */}
+            <div className="mt-2.5 md:mt-3 rounded-lg bg-fb-aqua/[0.04] border border-fb-aqua/[0.08] px-3 py-2.5 md:px-4 md:py-3 h-[72px] md:h-[80px] flex items-center overflow-hidden">
+              <p
+                className={cn(
+                  "text-[10px] md:text-xs leading-relaxed text-fb-sky/70 font-sans text-left transition-all duration-300",
+                  tipFade
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-1",
+                )}
+              >
+                {activeTip}
+              </p>
+            </div>
           </CardHeader>
 
           <CardContent className="px-5 pt-3.5 pb-2.5 md:px-8 md:pt-[18px] md:pb-3">
@@ -1475,7 +1491,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
 
           <CardFooter className="justify-center px-5 pb-4 md:px-8 md:pb-5 pt-0">
             <p className="text-fb-sky text-[8px] md:text-[9px] opacity-25 font-sans">
-              Powered by Fastbreak AI
+              Fastbreak Event Dashboard
             </p>
           </CardFooter>
         </Card>
