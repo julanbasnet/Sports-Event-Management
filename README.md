@@ -1,12 +1,15 @@
 **Fastbreak Event Dashboard**
+
 Full-stack sports event management application I built for the Fastbreak developer challenge. The application is live and fully compliant with the technical specifications provided.
 Live: sports-event-management-gold.vercel.app
+
 **Project Overview**
 Sports Event Management Platform is where users can create, view, and manage sports events with venue information. Users sign in with Google, land on a dashboard showing their events, and from there they can create new events, edit existing ones, delete with confirmation, and search or filter by name or sport type. Each event can have one or more venues attached to it.
 The challenge came with a detailed spec that outlined the tech stack, phases, component boundaries, database schema, and server action patterns. The stack was prescribed as Next.js with App Router, TypeScript, Supabase for database and auth, Tailwind CSS, shadcn/ui, and Vercel for deployment. Server actions over API routes was a requirement. The only API route is /auth/callback because the Supabase OAuth flow needs it.
 Before writing any code, I created a set of documentation files: requirement.md, architecture.md, codingstandards.md, design.md, userflow.md, and CLAUDE.md. I did this because the entire project was built through agentic AI development. Every time an AI agent picks up a task, it needs full context on what the project is, what the goals are, what patterns to follow, and what standards to maintain. Without these files, the agent starts from scratch each session and makes inconsistent decisions. By having everything documented upfront, the agent reads the docs, understands the constraints, and writes code that stays aligned with the project from start to finish. This was not optional for me, it was how I kept the codebase consistent across multiple coding sessions.
 For the login page, the spec just asked for a branded page with the logo and a sign-in button. Since the instructions did not specify a design for navigation bars, headers, or the login page, I reached out to the recruiter to ask if I could design a more polished login interface while keeping all original functionality intact. After getting approval, I built an interactive basketball shooting game that renders behind the login card. It has physics-based ball movement, a draggable ground line, particle effects, score tracking, and a tip carousel that shows Fastbreak facts on every basket. The card uses a glassmorphism design with a league bar across the top and a stats ticker along the bottom. I made the game responsive across mobile and desktop with a layout calculator that derives positions and sizes from the screen dimensions.
 All original login functionality is preserved. The Google sign-in button, error handling on auth failure, and redirect behavior work exactly as specified.
+
 **Architecture Decisions**
 Most of the architectural patterns came from the spec. Server actions for data operations, the createSafeAction wrapper for Zod validation and typed responses, a shared EventForm for create and edit, URL search params for filtering, and clear server/client component boundaries. Below are the decisions I made on my own.
 I went with delete-and-reinsert for venue updates. When a user edits an event, the code deletes all existing venues for that event and inserts the new set from the form. I considered diffing the arrays to figure out what changed but it was not worth the complexity given the small venue count per event.
@@ -15,12 +18,14 @@ I kept event pages outside the dashboard layout. The spec gave two options and I
 I added a redundant auth check in the dashboard layout on top of middleware. Just an extra safety net in case middleware ever gets misconfigured.
 I did not add a client-side Supabase instance anywhere. All database access goes through server actions. No real-time subscriptions, no optimistic updates. Every mutation goes to the server and the dashboard refreshes through revalidatePath. For what this app needs, that was enough.
 The basketball game on the login page is one component file, about 1500 lines. Physics, rendering, input, layout math, particles, tip rotation. I would normally split this up but it is self-contained and only used on one page so I left it as is.
+
 **Trade-offs**
 I did not add debouncing on search. Every keystroke triggers router.push and a server refetch. Works fine at this scale but would need debouncing or client-side filtering on a larger dataset.
 I have a full page loading skeleton on filter changes instead of a localized loading indicator on just the results area. It works but briefly replaces the whole page content. I would scope it down to just the event grid if I had more time.
 I did not write tests. This is a challenge submission so I focused on completing all requirements and the login page. In production I would have Vitest on the safe-action wrapper and schemas, and Playwright for auth and CRUD flows.
 The canvas game is not optimized for low-end devices. It runs a continuous Canvas2D loop that works well on modern hardware but older phones could drop frames. I have prefers-reduced-motion respected for CSS animations but the canvas loop does not check for it currently.
 I used Tailwind v4 @theme inline and @utility directives for design tokens in globals.css instead of a config file. Cleaner approach but editor tooling is still catching up. Autocomplete may not resolve custom class names like fb-aqua or fb-galaxy.
+
 **Setup Instructions**
 You need Node.js 18+ and a Supabase project.
 
@@ -61,6 +66,7 @@ create policy "Users manage own venues" on venues
 for all using (
 event_id in (select id from events where user_id = auth.uid())
 );
+
 
 Google OAuth
 
