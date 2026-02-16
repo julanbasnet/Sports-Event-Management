@@ -685,7 +685,9 @@ function drawCourt(ctx: CanvasRenderingContext2D, world: WorldLayout): void {
   const spacing = screenW / (leagues.length + 1);
 
   ctx.save();
-  ctx.font = `${isMobile ? 600 : 700} ${isMobile ? 10 : 13}px 'Orbitron', monospace`;
+  const courtFontWeight = isMobile ? 600 : 700;
+  const courtFontSize = isMobile ? 10 : 13;
+  ctx.font = `${courtFontWeight} ${courtFontSize}px 'Orbitron', monospace`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
@@ -920,7 +922,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
         return;
       }
 
-      // SCORE / MISS — bounce while paused, then return
+      // SCORE / MISS — bounce while paused, then retrieve ball
       if (currentState === GAME_STATE.SCORE || currentState === GAME_STATE.MISS) {
         ball.vy += GRAVITY;
         ball.x += ball.vx;
