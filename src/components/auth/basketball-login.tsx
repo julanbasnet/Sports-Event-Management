@@ -1429,7 +1429,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
 
       {/* Login card */}
       <div className="absolute top-1/2 left-1/2 md:left-[35%] -translate-x-1/2 -translate-y-1/2 z-10 w-full max-w-[300px] md:max-w-[340px] px-3">
-        <Card className="login-card-glass border-none">
+        <Card className="login-card-glass border-none bg-transparent">
           <CardHeader className="text-center pb-0 px-5 pt-[22px] md:px-8 md:pt-7">
             <Image
               src="/images/fastbreak-logo-reversed.svg"
