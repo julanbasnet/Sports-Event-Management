@@ -113,3 +113,90 @@
 @utility fb-gradient {
   background: linear-gradient(135deg, #17F2E3, #49CBE8);
 }
+
+/* ─── Login page ────────────────────────────────────────────────────── */
+
+/* Orbitron display font — canvas court branding and broadcast overlays */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&display=swap");
+
+@theme inline {
+  --font-orbitron: "Orbitron", monospace;
+  --shadow-login-card: 0 0 80px rgba(23, 242, 227, 0.06), 0 24px 60px rgba(0, 0, 0, 0.4);
+  --shadow-score-miss: 0 0 18px rgba(255, 74, 74, 0.25);
+  --shadow-btn-glow: 0 0 24px rgba(23, 242, 227, 0.12);
+}
+
+/* Glass card overlay for the login form */
+@utility login-card-glass {
+  background: rgba(1, 22, 39, 0.82);
+  backdrop-filter: blur(28px);
+  border: 1px solid rgba(23, 242, 227, 0.10);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-login-card);
+}
+
+/* Translucent bar for league banner and ticker strip */
+@utility login-glass-bar {
+  background: rgba(1, 22, 39, 0.4);
+  backdrop-filter: blur(8px);
+  border-color: rgba(23, 242, 227, 0.06);
+}
+
+/* Score badge frosted background */
+@utility login-score-badge {
+  backdrop-filter: blur(12px);
+  transition: all 0.35s ease;
+}
+
+/* Vertical guide line gradient through ground handle */
+@utility login-ground-guide {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(23, 242, 227, 0.19),
+    rgba(23, 242, 227, 0.31),
+    rgba(23, 242, 227, 0.19),
+    transparent
+  );
+}
+
+/* Ground handle circle with frosted glass */
+@utility login-ground-handle {
+  background: rgba(1, 22, 39, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(23, 242, 227, 0.31);
+  box-shadow:
+    0 0 16px rgba(23, 242, 227, 0.15),
+    inset 0 0 8px rgba(23, 242, 227, 0.05);
+}
+
+/* Sign-in button with hover state built in */
+@utility login-btn {
+  background: rgba(23, 242, 227, 0.04);
+  border: 1px solid rgba(23, 242, 227, 0.15);
+  &:hover:not(:disabled) {
+    background: rgba(23, 242, 227, 0.10);
+    border-color: rgba(23, 242, 227, 0.35);
+    box-shadow: var(--shadow-btn-glow);
+  }
+}
+
+/* Logo glow on the login card */
+@utility login-logo-glow {
+  filter: drop-shadow(0 0 20px rgba(23, 242, 227, 0.2));
+}
+
+/* Separator between logo and form content */
+@utility login-separator {
+  background: rgba(23, 242, 227, 0.08);
+}
+
+/* Ticker crawl animation for broadcast stats strip */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@utility animate-ticker {
+  animation: ticker 35s linear infinite;
+}

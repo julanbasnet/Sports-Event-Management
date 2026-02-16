@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { signInWithGoogle } from "@/lib/actions/auth";
+import { cn } from "@/lib/utils";
 
 // ============================================================================
 // TYPES
@@ -78,24 +79,31 @@ type BasketballLoginProps = {
 // CONSTANTS
 // ============================================================================
 
-const THEME = {
-  background: "#011627",
-  backgroundGrad: "#0A2540",
-  court: "#0A2540",
-  courtLine: "#1B3A4B",
-  glow: "#17F2E3",
-  accent: "#17F2E3",
-  accentBright: "#49CBE8",
-  ballDark: "#0A2540",
-  ballMid: "#1B3A4B",
-  ballLight: "#17F2E3",
-  ballHighlight: "#49CBE8",
-  rim: "#17F2E3",
-  net: "#0ED2C5",
+// ============================================================================
+// CANVAS THEME
+// Hardcoded hex values are required here — Canvas2D paints pixels directly
+// and cannot reference CSS variables or Tailwind classes. These map 1:1 to
+// the design-system tokens defined in globals.css / design.md.
+// ============================================================================
+
+const CANVAS = {
+  background: "#011627",      // fb-galaxy
+  backgroundGrad: "#0A2540",  // fb-galaxy-light
+  court: "#0A2540",           // fb-galaxy-light
+  courtLine: "#1B3A4B",       // fb-galaxy-muted
+  glow: "#17F2E3",            // fb-aqua
+  accent: "#17F2E3",          // fb-aqua
+  accentBright: "#49CBE8",    // fb-sky
+  ballDark: "#0A2540",        // fb-galaxy-light
+  ballMid: "#1B3A4B",         // fb-galaxy-muted
+  ballLight: "#17F2E3",       // fb-aqua
+  ballHighlight: "#49CBE8",   // fb-sky
+  rim: "#17F2E3",             // fb-aqua
+  net: "#0ED2C5",             // fb-aqua-dark
   text: "#FFFFFF",
-  textDim: "#49CBE8",
-  red: "#EF4444",
-  playerHi: "#1B3A4B",
+  textDim: "#49CBE8",         // fb-sky
+  red: "#EF4444",             // destructive
+  playerHi: "#1B3A4B",       // fb-galaxy-muted
   playerEdge: "rgba(23,242,227,0.1)",
   playerShades: [
     "#011627", "#0A2540", "#0d2e4a", "#081e38", "#112d4a",
@@ -105,7 +113,7 @@ const THEME = {
 
 const GRAVITY = 0.45;
 const BOUNCE_FACTOR = 0.6;
-const BALL_COLORS = [THEME.ballLight, THEME.ballMid, THEME.ballDark];
+const BALL_COLORS = [CANVAS.ballLight, CANVAS.ballMid, CANVAS.ballDark];
 
 const GAME_STATE = {
   HELD: "held",
@@ -281,7 +289,7 @@ class Spark {
   isTriangle: boolean;
   color: string;
 
-  constructor(x: number, y: number, color: string = THEME.accent) {
+  constructor(x: number, y: number, color: string = CANVAS.accent) {
     const angle = Math.random() * Math.PI * 2;
     const speed = 1.5 + Math.random() * 5;
     this.x = x;
@@ -395,15 +403,15 @@ class AmbientTriangle {
 
     if (this.isGlass) {
       ctx.globalAlpha = this.glassOpacity;
-      ctx.fillStyle = THEME.accentBright;
+      ctx.fillStyle = CANVAS.accentBright;
       ctx.fill();
       ctx.globalAlpha = this.opacity * 1.5;
-      ctx.strokeStyle = THEME.accent;
+      ctx.strokeStyle = CANVAS.accent;
       ctx.lineWidth = 0.6;
       ctx.stroke();
     } else {
       ctx.globalAlpha = this.opacity;
-      ctx.fillStyle = THEME.accent;
+      ctx.fillStyle = CANVAS.accent;
       ctx.fill();
     }
 
@@ -425,7 +433,7 @@ function drawBall(
 ): void {
   if (glowing) {
     ctx.save();
-    ctx.shadowColor = THEME.accentBright;
+    ctx.shadowColor = CANVAS.accentBright;
     ctx.shadowBlur = 18;
     ctx.beginPath();
     ctx.arc(x, y, radius + 2, 0, Math.PI * 2);
@@ -462,12 +470,12 @@ function drawBall(
     ctx.lineTo(x + Math.cos(a1) * innerR, y + Math.sin(a1) * innerR);
     ctx.lineTo(x + Math.cos(a2) * innerR, y + Math.sin(a2) * innerR);
     ctx.closePath();
-    ctx.fillStyle = i % 2 ? THEME.ballMid : THEME.ballHighlight + "28";
+    ctx.fillStyle = i % 2 ? CANVAS.ballMid : CANVAS.ballHighlight + "28";
     ctx.fill();
   }
 
   // Seam lines
-  ctx.strokeStyle = THEME.accent + "30";
+  ctx.strokeStyle = CANVAS.accent + "30";
   ctx.lineWidth = 0.8;
   ctx.beginPath();
   ctx.moveTo(x - radius * 0.65, y);
@@ -498,10 +506,10 @@ function drawMeshTriangle(
   ctx.closePath();
 
   ctx.fillStyle = colorIndex === "hi"
-    ? THEME.playerHi
-    : THEME.playerShades[typeof colorIndex === "number" ? colorIndex % 10 : 0];
+    ? CANVAS.playerHi
+    : CANVAS.playerShades[typeof colorIndex === "number" ? colorIndex % 10 : 0];
   ctx.fill();
-  ctx.strokeStyle = THEME.playerEdge;
+  ctx.strokeStyle = CANVAS.playerEdge;
   ctx.lineWidth = 0.5;
   ctx.stroke();
 }
@@ -555,7 +563,7 @@ function drawPlayer(
   drawMeshTriangle(ctx, [[-7, -114], [0, -102], [7, -114]], 9);
 
   // Eyes
-  ctx.fillStyle = THEME.accent + "50";
+  ctx.fillStyle = CANVAS.accent + "50";
   ctx.beginPath();
   ctx.arc(-3.5, -106, 1.6, 0, Math.PI * 2);
   ctx.fill();
@@ -617,7 +625,7 @@ function drawGhost(
     ctx.lineTo(tri[1][0], tri[1][1]);
     ctx.lineTo(tri[2][0], tri[2][1]);
     ctx.closePath();
-    ctx.fillStyle = THEME.playerShades[i % 10];
+    ctx.fillStyle = CANVAS.playerShades[i % 10];
     ctx.fill();
   });
 
@@ -628,14 +636,14 @@ function drawGhost(
 function drawCourt(ctx: CanvasRenderingContext2D, world: WorldLayout): void {
   const { screenW, screenH, groundY, isMobile, scale, rimX } = world;
 
-  ctx.fillStyle = THEME.court + "40";
+  ctx.fillStyle = CANVAS.court + "40";
   ctx.fillRect(0, groundY, screenW, screenH - groundY);
 
   // Glowing ground line
   ctx.save();
-  ctx.shadowColor = THEME.glow;
+  ctx.shadowColor = CANVAS.glow;
   ctx.shadowBlur = 14;
-  ctx.strokeStyle = THEME.glow + "88";
+  ctx.strokeStyle = CANVAS.glow + "88";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(0, groundY);
@@ -645,7 +653,7 @@ function drawCourt(ctx: CanvasRenderingContext2D, world: WorldLayout): void {
 
   // Zigzag pattern along ground
   const segmentWidth = isMobile ? 28 : 38;
-  ctx.strokeStyle = THEME.accent + "12";
+  ctx.strokeStyle = CANVAS.accent + "12";
   ctx.lineWidth = 1;
   for (let i = 0; i < screenW / segmentWidth + 1; i++) {
     const sx = i * segmentWidth;
@@ -657,7 +665,7 @@ function drawCourt(ctx: CanvasRenderingContext2D, world: WorldLayout): void {
   }
 
   // Half court arc
-  ctx.strokeStyle = THEME.courtLine + "28";
+  ctx.strokeStyle = CANVAS.courtLine + "28";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.arc(screenW * 0.5, groundY, 70 * scale, Math.PI, Math.PI * 2);
@@ -666,7 +674,7 @@ function drawCourt(ctx: CanvasRenderingContext2D, world: WorldLayout): void {
   // Three-point arc around hoop
   ctx.beginPath();
   ctx.arc(rimX + 8, groundY, 120 * scale, Math.PI, Math.PI * 2);
-  ctx.strokeStyle = THEME.courtLine + "20";
+  ctx.strokeStyle = CANVAS.courtLine + "20";
   ctx.stroke();
 
   // Arena floor branding — league names painted on court like a real venue
@@ -687,7 +695,7 @@ function drawCourt(ctx: CanvasRenderingContext2D, world: WorldLayout): void {
     ctx.translate(fx, floorY);
     ctx.rotate(-0.08 + i * 0.025);
     ctx.globalAlpha = 0.045 + (i % 2) * 0.01;
-    ctx.fillStyle = THEME.accent;
+    ctx.fillStyle = CANVAS.accent;
     ctx.fillText(name, 0, 0);
     ctx.restore();
   });
@@ -703,22 +711,22 @@ function drawHoop(
 
   // Backboard
   const backboardHeight = rimWidth * 1.8;
-  ctx.strokeStyle = THEME.accent + "55";
+  ctx.strokeStyle = CANVAS.accent + "55";
   ctx.lineWidth = 2.5;
   ctx.beginPath();
   ctx.moveTo(rimX + rimWidth + 4, rimY - backboardHeight / 2);
   ctx.lineTo(rimX + rimWidth + 4, rimY + backboardHeight / 2);
   ctx.stroke();
 
-  ctx.strokeStyle = THEME.accent + "28";
+  ctx.strokeStyle = CANVAS.accent + "28";
   ctx.lineWidth = 1;
   ctx.strokeRect(rimX + rimWidth - 1, rimY - 10, 7, 20);
 
   // Rim
   ctx.save();
-  ctx.shadowColor = THEME.rim;
+  ctx.shadowColor = CANVAS.rim;
   ctx.shadowBlur = 10;
-  ctx.strokeStyle = THEME.rim;
+  ctx.strokeStyle = CANVAS.rim;
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(rimX, rimY);
@@ -730,14 +738,14 @@ function drawHoop(
   [rimX, rimX + rimWidth].forEach((dotX) => {
     ctx.beginPath();
     ctx.arc(dotX, rimY, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = THEME.rim;
+    ctx.fillStyle = CANVAS.rim;
     ctx.fill();
   });
 
   // Net strings
   const swayOffset = Math.sin(netSway) * 2.5;
   const netHeight = 32 * scale;
-  ctx.strokeStyle = THEME.net + "55";
+  ctx.strokeStyle = CANVAS.net + "55";
   ctx.lineWidth = 0.8;
   for (let i = 0; i <= 6; i++) {
     const t = i / 6;
@@ -821,7 +829,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
 
     const ball = ballRef.current;
     for (let i = 0; i < 28; i++) {
-      sparksRef.current.push(new Spark(ball.x, ball.y, THEME.accent));
+      sparksRef.current.push(new Spark(ball.x, ball.y, CANVAS.accent));
     }
   }, []);
 
@@ -834,7 +842,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
 
     const ball = ballRef.current;
     for (let i = 0; i < 16; i++) {
-      sparksRef.current.push(new Spark(ball.x, ball.y, THEME.red));
+      sparksRef.current.push(new Spark(ball.x, ball.y, CANVAS.red));
     }
   }, []);
 
@@ -955,7 +963,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
           gameStateRef.current = GAME_STATE.HELD;
           hasScoredRef.current = false;
           for (let i = 0; i < 6; i++) {
-            sparksRef.current.push(new Spark(hand.x, hand.y, THEME.accentBright));
+            sparksRef.current.push(new Spark(hand.x, hand.y, CANVAS.accentBright));
           }
         }
         return;
@@ -1032,8 +1040,8 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
 
       // Background gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, screenH);
-      gradient.addColorStop(0, THEME.background);
-      gradient.addColorStop(1, THEME.backgroundGrad);
+      gradient.addColorStop(0, CANVAS.background);
+      gradient.addColorStop(1, CANVAS.backgroundGrad);
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, screenW, screenH);
 
@@ -1048,7 +1056,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
       ctx.save();
 
       ctx.globalAlpha = panelAlpha;
-      ctx.fillStyle = THEME.accent;
+      ctx.fillStyle = CANVAS.accent;
       ctx.beginPath();
       ctx.moveTo(screenW * 0.65, 0);
       ctx.lineTo(screenW, screenH * 0.35);
@@ -1056,12 +1064,12 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
       ctx.closePath();
       ctx.fill();
       ctx.globalAlpha = panelAlpha * 3;
-      ctx.strokeStyle = THEME.accent;
+      ctx.strokeStyle = CANVAS.accent;
       ctx.lineWidth = 0.8;
       ctx.stroke();
 
       ctx.globalAlpha = panelAlpha * 0.8;
-      ctx.fillStyle = THEME.accentBright;
+      ctx.fillStyle = CANVAS.accentBright;
       ctx.beginPath();
       ctx.moveTo(screenW * 0.08, screenH * 0.3);
       ctx.lineTo(screenW * 0.22, screenH * 0.45);
@@ -1070,12 +1078,12 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
       ctx.closePath();
       ctx.fill();
       ctx.globalAlpha = panelAlpha * 2.5;
-      ctx.strokeStyle = THEME.accent;
+      ctx.strokeStyle = CANVAS.accent;
       ctx.lineWidth = 0.5;
       ctx.stroke();
 
       ctx.globalAlpha = panelAlpha * 0.6;
-      ctx.fillStyle = THEME.accent;
+      ctx.fillStyle = CANVAS.accent;
       ctx.beginPath();
       ctx.moveTo(screenW * 0.35, screenH);
       ctx.lineTo(screenW * 0.55, screenH * 0.75);
@@ -1084,7 +1092,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
       ctx.fill();
 
       ctx.globalAlpha = panelAlpha * 1.4;
-      ctx.fillStyle = THEME.accentBright;
+      ctx.fillStyle = CANVAS.accentBright;
       ctx.beginPath();
       ctx.moveTo(screenW * 0.02, screenH * 0.05);
       ctx.lineTo(screenW * 0.15, screenH * 0.02);
@@ -1092,7 +1100,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
       ctx.closePath();
       ctx.fill();
       ctx.globalAlpha = panelAlpha * 4;
-      ctx.strokeStyle = THEME.accent;
+      ctx.strokeStyle = CANVAS.accent;
       ctx.lineWidth = 0.4;
       ctx.stroke();
 
@@ -1170,7 +1178,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
         let traceY = hand.y;
         let traceVx = vx;
         let traceVy = vy;
-        ctx.fillStyle = THEME.accent + "30";
+        ctx.fillStyle = CANVAS.accent + "30";
 
         for (let step = 0; step < 22; step++) {
           traceVy += GRAVITY;
@@ -1194,7 +1202,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
 
         const powerPct = clamp(Math.hypot(vx, vy) / 25, 0, 1);
         const powerGrad = ctx.createLinearGradient(barX, 0, barX + barWidth, 0);
-        powerGrad.addColorStop(0, THEME.accent);
+        powerGrad.addColorStop(0, CANVAS.accent);
         powerGrad.addColorStop(1, "#ff6b6b");
         ctx.fillStyle = powerGrad;
         ctx.fillRect(barX, barY, barWidth * powerPct, barHeight);
@@ -1204,7 +1212,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
       if (gameStateRef.current === GAME_STATE.HELD) {
         const hand = getHandPosition();
         ctx.setLineDash([3, 5]);
-        ctx.strokeStyle = THEME.accent + "12";
+        ctx.strokeStyle = CANVAS.accent + "12";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.arc(hand.x, hand.y, 26, 0, Math.PI * 2);
@@ -1358,26 +1366,16 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
   }
 
   // ========================================================================
-  // JSX
+  // JSX — Tailwind classes only, no inline styles
+  // Sole exception: dynamic `top` on ground handle (JS-driven drag position)
   // ========================================================================
 
-  const isMobileView = typeof window !== "undefined" && window.innerWidth < 600;
-
-  const badgeColor = isRedBadge ? THEME.red : THEME.accent;
-  const badgeBg = isRedBadge ? "rgba(255,74,74,0.14)" : "rgba(10,22,40,0.82)";
-  const badgeBorder = isRedBadge ? "rgba(255,74,74,0.5)" : "rgba(79,195,247,0.3)";
-  const badgeShadow = isRedBadge ? "0 0 18px rgba(255,74,74,0.25)" : "none";
-
   return (
-    <div
-      className="relative w-screen overflow-hidden bg-fb-galaxy"
-      style={{ height: "100dvh", touchAction: "none" }}
-    >
+    <div className="relative w-screen overflow-hidden bg-fb-galaxy h-dvh touch-none">
       {/* Game canvas */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full cursor-crosshair"
-        style={{ touchAction: "none" }}
+        className="absolute inset-0 w-full h-full cursor-crosshair touch-none"
         onMouseDown={handlePointerDown}
         onMouseMove={handlePointerMove}
         onMouseUp={handlePointerUp}
@@ -1391,116 +1389,59 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
       <div className="absolute top-2.5 right-2.5 z-10 md:top-4 md:right-5">
         <Badge
           variant="outline"
-          className="font-bold border-none"
-          style={{
-            background: badgeBg,
-            backdropFilter: "blur(12px)",
-            color: badgeColor,
-            border: `1px solid ${badgeBorder}`,
-            fontSize: isMobileView ? 13 : 16,
-            padding: isMobileView ? "5px 10px" : "7px 16px",
-            transition: "all 0.35s ease",
-            boxShadow: badgeShadow,
-          }}
+          className={cn(
+            "login-score-badge font-bold border text-sm px-2.5 py-1.5",
+            "md:text-base md:px-4 md:py-2",
+            isRedBadge
+              ? "bg-destructive/15 text-destructive border-destructive/50 shadow-score-miss"
+              : "bg-fb-galaxy/80 text-fb-aqua border-fb-aqua/30",
+          )}
         >
           🏀 {score}
         </Badge>
       </div>
 
       {/* Ground handle — before/after style drag circle on the ground line */}
+      {/* Dynamic `top` is the one required inline style — driven by JS drag state */}
       <div
         onPointerDown={onGroundHandlePointerDown}
-        className="absolute z-[12] select-none"
-        style={{
-          left: isMobileView ? 10 : 24,
-          top: `${groundSlider[0]}%`,
-          transform: "translate(-50%, -50%)",
-          cursor: "ns-resize",
-          touchAction: "none",
-        }}
+        className="absolute left-2.5 md:left-6 z-[12] -translate-x-1/2 -translate-y-1/2 cursor-ns-resize select-none touch-none"
+        style={{ top: `${groundSlider[0]}%` }}
       >
-        <div
-          className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-          style={{
-            top: -40,
-            width: 1,
-            height: 80,
-            background: `linear-gradient(to bottom, transparent, ${THEME.accent}30, ${THEME.accent}50, ${THEME.accent}30, transparent)`,
-          }}
-        />
-        <div
-          className="rounded-full flex flex-col items-center justify-center relative"
-          style={{
-            width: isMobileView ? 28 : 34,
-            height: isMobileView ? 28 : 34,
-            background: "rgba(1,22,39,0.85)",
-            backdropFilter: "blur(12px)",
-            border: `1.5px solid ${THEME.accent}50`,
-            boxShadow: "0 0 16px rgba(23,242,227,0.15), inset 0 0 8px rgba(23,242,227,0.05)",
-            gap: 1,
-          }}
-        >
-          <svg width={isMobileView ? 8 : 10} height={isMobileView ? 5 : 6} viewBox="0 0 10 6" fill="none">
-            <path d="M1 5L5 1L9 5" stroke={THEME.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+        <div className="absolute left-1/2 -translate-x-1/2 -top-10 w-px h-20 login-ground-guide pointer-events-none" />
+        <div className="login-ground-handle rounded-full flex flex-col items-center justify-center size-7 md:size-[34px] gap-px">
+          <svg className="size-2 md:size-2.5" viewBox="0 0 10 6" fill="none">
+            <path d="M1 5L5 1L9 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-fb-aqua/70" />
           </svg>
-          <div
-            className="rounded-sm"
-            style={{ width: isMobileView ? 8 : 10, height: 1, background: THEME.accent, opacity: 0.35 }}
-          />
-          <svg width={isMobileView ? 8 : 10} height={isMobileView ? 5 : 6} viewBox="0 0 10 6" fill="none">
-            <path d="M1 1L5 5L9 1" stroke={THEME.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+          <div className="w-2 md:w-2.5 h-px rounded-sm bg-fb-aqua/35" />
+          <svg className="size-2 md:size-2.5" viewBox="0 0 10 6" fill="none">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-fb-aqua/70" />
           </svg>
         </div>
       </div>
 
       {/* Login card */}
-      <div
-        className="absolute top-1/2 z-10 w-full -translate-y-1/2 px-3"
-        style={{
-          left: isMobileView ? "50%" : "35%",
-          transform: `translate(-50%, -50%)`,
-          maxWidth: isMobileView ? 300 : 340,
-        }}
-      >
-        <Card
-          className="border-none"
-          style={{
-            background: "rgba(1,22,39,0.82)",
-            backdropFilter: "blur(28px)",
-            border: "1px solid rgba(23,242,227,0.10)",
-            borderRadius: 12,
-            boxShadow: "0 0 80px rgba(23,242,227,0.06), 0 24px 60px rgba(0,0,0,0.4)",
-          }}
-        >
-          <CardHeader
-            className="text-center pb-0"
-            style={{ padding: isMobileView ? "22px 20px 4px" : "28px 32px 6px" }}
-          >
+      <div className="absolute top-1/2 left-1/2 md:left-[35%] -translate-x-1/2 -translate-y-1/2 z-10 w-full max-w-[300px] md:max-w-[340px] px-3">
+        <Card className="login-card-glass border-none">
+          <CardHeader className="text-center pb-0 px-5 pt-[22px] md:px-8 md:pt-7">
             <Image
               src="/images/fastbreak-logo-reversed.svg"
               alt="Fastbreak AI"
-              width={isMobileView ? 180 : 220}
-              height={isMobileView ? 23 : 29}
+              width={220}
+              height={29}
               priority
-              className="mx-auto"
-              style={{ filter: "drop-shadow(0 0 20px rgba(23,242,227,0.2))" }}
+              className="mx-auto w-[180px] md:w-[220px] h-auto login-logo-glow"
             />
-            <p
-              className="text-fb-sky font-sans"
-              style={{ fontSize: isMobileView ? 10 : 11, marginTop: 8, opacity: 0.5 }}
-            >
+            <p className="text-fb-sky text-[10px] md:text-[11px] mt-2 opacity-50 font-sans">
               Accelerate Your Game
             </p>
           </CardHeader>
 
-          <CardContent style={{ padding: isMobileView ? "14px 20px 10px" : "18px 32px 12px" }}>
-            <Separator
-              className="mb-4 md:mb-5"
-              style={{ background: "rgba(23,242,227,0.08)" }}
-            />
+          <CardContent className="px-5 pt-3.5 pb-2.5 md:px-8 md:pt-[18px] md:pb-3">
+            <Separator className="mb-4 md:mb-5 login-separator" />
 
             {error && (
-              <div className="mb-4 rounded-md bg-red-500/10 p-3 text-sm text-red-400 border border-red-500/20">
+              <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-red-400 border border-destructive/20">
                 Authentication failed. Please try again.
               </div>
             )}
@@ -1509,25 +1450,7 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
               onClick={handleSignIn}
               disabled={isPending}
               variant="outline"
-              className="w-full font-semibold rounded-lg transition-all duration-300"
-              style={{
-                background: "rgba(23,242,227,0.04)",
-                border: "1px solid rgba(23,242,227,0.15)",
-                color: THEME.text,
-                cursor: "pointer",
-                height: isMobileView ? 44 : 48,
-                fontSize: isMobileView ? 13 : 14,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(23,242,227,0.10)";
-                e.currentTarget.style.borderColor = "rgba(23,242,227,0.35)";
-                e.currentTarget.style.boxShadow = "0 0 24px rgba(23,242,227,0.12)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(23,242,227,0.04)";
-                e.currentTarget.style.borderColor = "rgba(23,242,227,0.15)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
+              className="login-btn w-full h-11 md:h-12 text-sm md:text-base font-semibold rounded-lg text-white transition-all duration-300"
             >
               {isPending ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -1542,26 +1465,14 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
               {isPending ? "Signing in..." : "Sign in with Google"}
             </Button>
 
-            <p
-              className="text-center text-fb-sky font-sans"
-              style={{
-                fontSize: isMobileView ? 8 : 9,
-                marginTop: isMobileView ? 10 : 14,
-                opacity: 0.3,
-              }}
-            >
-              {isMobileView ? "Tap to aim · Release to shoot" : "Click to aim · Release to shoot"}
+            <p className="text-center text-fb-sky text-[8px] md:text-[9px] mt-2.5 md:mt-3.5 opacity-30 font-sans">
+              <span className="md:hidden">Tap to aim · Release to shoot</span>
+              <span className="hidden md:inline">Click to aim · Release to shoot</span>
             </p>
           </CardContent>
 
-          <CardFooter
-            className="justify-center"
-            style={{ padding: isMobileView ? "0 20px 16px" : "0 32px 20px" }}
-          >
-            <p
-              className="text-fb-sky font-sans"
-              style={{ fontSize: isMobileView ? 8 : 9, opacity: 0.25 }}
-            >
+          <CardFooter className="justify-center px-5 pb-4 md:px-8 md:pb-5 pt-0">
+            <p className="text-fb-sky text-[8px] md:text-[9px] opacity-25 font-sans">
               Powered by Fastbreak AI
             </p>
           </CardFooter>
@@ -1569,96 +1480,31 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
       </div>
 
       {/* League bar — desktop only, broadcast scoreboard style */}
-      {!isMobileView && (
-        <div
-          className="absolute top-0 inset-x-0 z-[8] h-8 flex items-center justify-center gap-8"
-          style={{
-            background: "rgba(1,22,39,0.4)",
-            backdropFilter: "blur(8px)",
-            borderBottom: "1px solid rgba(23,242,227,0.06)",
-          }}
-        >
-          {LEAGUE_NAMES.map((league) => (
-            <span
-              key={league}
-              className="text-fb-aqua"
-              style={{
-                fontSize: 8,
-                fontFamily: "'Orbitron', sans-serif",
-                fontWeight: 700,
-                letterSpacing: 2,
-                opacity: 0.2,
-              }}
-            >
-              {league}
-            </span>
-          ))}
-        </div>
-      )}
+      <div className="absolute top-0 inset-x-0 z-[8] h-8 hidden md:flex items-center justify-center gap-8 login-glass-bar border-b">
+        {LEAGUE_NAMES.map((league) => (
+          <span
+            key={league}
+            className="text-fb-aqua text-[8px] font-orbitron font-bold tracking-[2px] opacity-20"
+          >
+            {league}
+          </span>
+        ))}
+      </div>
 
       {/* Stats ticker — broadcast crawl */}
-      <div
-        className="absolute bottom-0 inset-x-0 z-[8] flex items-center overflow-hidden"
-        style={{
-          height: isMobileView ? 24 : 28,
-          background: "rgba(1,22,39,0.4)",
-          backdropFilter: "blur(8px)",
-          borderTop: "1px solid rgba(23,242,227,0.06)",
-        }}
-      >
-        <div
-          className="flex whitespace-nowrap"
-          style={{
-            gap: isMobileView ? 40 : 60,
-            animation: "ticker 35s linear infinite",
-            paddingLeft: "100%",
-          }}
-        >
+      <div className="absolute bottom-0 inset-x-0 z-[8] h-6 md:h-7 flex items-center overflow-hidden login-glass-bar border-t">
+        <div className="flex whitespace-nowrap gap-10 md:gap-[60px] pl-[100%] animate-ticker">
           {TICKER_STATS.map((text, i) => (
             <span
               key={i}
-              className="inline-flex items-center text-fb-aqua"
-              style={{
-                fontSize: isMobileView ? 7 : 9,
-                fontFamily: "'Orbitron', sans-serif",
-                fontWeight: 600,
-                opacity: 0.18,
-                letterSpacing: 1,
-                gap: 8,
-              }}
+              className="inline-flex items-center gap-2 text-fb-aqua text-[7px] md:text-[9px] font-orbitron font-semibold opacity-[0.18] tracking-[1px]"
             >
-              <span
-                className="inline-block rounded-full bg-fb-aqua"
-                style={{ width: 3, height: 3, opacity: 0.6 }}
-              />
+              <span className="inline-block size-[3px] rounded-full bg-fb-aqua opacity-60" />
               {text}
             </span>
           ))}
         </div>
       </div>
-
-      {/* Orbitron font — loaded via link because canvas rendering needs the font name directly */}
-      <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&display=swap"
-        rel="stylesheet"
-      />
-
-      <style>{`
-        *, *::before, *::after {
-          -webkit-tap-highlight-color: transparent;
-          box-sizing: border-box;
-        }
-        html, body {
-          overflow: hidden;
-          touch-action: none;
-          margin: 0;
-          padding: 0;
-        }
-        @keyframes ticker {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-100%); }
-        }
-      `}</style>
     </div>
   );
 }
