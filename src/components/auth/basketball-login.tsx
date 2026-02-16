@@ -1503,12 +1503,12 @@ export function BasketballLogin({ error }: BasketballLoginProps): React.ReactEle
         </Card>
       </div>
 
-      {/* League bar — desktop only, broadcast scoreboard style */}
-      <div className="absolute top-0 inset-x-0 z-[8] h-8 hidden md:flex items-center justify-center gap-8 login-glass-bar border-b">
+      {/* League bar — broadcast scoreboard style */}
+      <div className="absolute top-0 inset-x-0 z-[8] h-6 md:h-8 flex items-center justify-center gap-4 md:gap-8 login-glass-bar border-b">
         {LEAGUE_NAMES.map((league) => (
           <span
             key={league}
-            className="text-fb-aqua text-[8px] font-orbitron font-bold tracking-[2px] opacity-20"
+            className="text-fb-aqua text-[6px] md:text-[8px] font-orbitron font-bold tracking-[1.5px] md:tracking-[2px] opacity-20"
           >
             {league}
           </span>
